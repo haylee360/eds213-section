@@ -39,3 +39,17 @@ COPY socioecon FROM 'data/socioecon.csv';
 SELECT * FROM socioecon;
 
 -- Question: How is tuberculosis incidence correlated with GDP?
+
+SELECT MAX(Incidence) AS Max_incidence, CountryCode, Year FROM tuberculosis
+    JOIN socioecon USING (CountryCode, Year);
+    GROUP BY (CountryCode, Year)
+    ORDER BY Max_incidence DESC
+    LIMIT 15;
+
+-- Want to see the country the highest incidence for each year 
+SELECT Incidence, CountryCode, Year FROM tuberculosis
+    RIGHT JOIN socioecon USING (CountryCode, Year);
+
+SELECT * FROM a LEFT JOIN b ON a.common = b.common;
+
+
