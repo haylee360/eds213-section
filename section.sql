@@ -37,3 +37,5 @@ CREATE TABLE socioecon(
 COPY socioecon FROM 'data/socioecon.csv';
 
 SELECT * FROM socioecon;
+
+-- Question: How is tuberculosis incidence correlated with GDP?
