@@ -46,10 +46,13 @@ SELECT MAX(Incidence) AS Max_incidence, CountryCode, Year FROM tuberculosis
     ORDER BY Max_incidence DESC
     LIMIT 15;
 
--- Want to see the country the highest incidence for each year 
-SELECT Incidence, CountryCode, Year FROM tuberculosis
-    RIGHT JOIN socioecon USING (CountryCode, Year);
+CREATE TABLE tb_gdp AS
+    SELECT tb.CountryCode, c.CountryName, tb.Year, tb.Incidence, s.GDPCapita
+    FROM tuberculosis tb
+    JOIN country c ON tb.CountryCode = c.CountryCode
+    JOIN socioecon s ON tb.CountryCode = s.CountryCode AND tb.Year = s.Year
+    WHERE tb.Incidence IS NOT NULL AND s.GDPCapita IS NOT NULL;
+
 
 SELECT * FROM a LEFT JOIN b ON a.common = b.common;
-
 
