@@ -1,0 +1,44 @@
+---
+title: "213-section"
+author: "Haylee Oyler"
+format: html
+---
+
+```{r}
+library(tidyverse)
+library(DBI)
+library(dbplyr)
+```
+
+```{r}
+conn <- DBI::dbConnect(duckdb::duckdb(), dbdir="tbdatabase.db")
+```
+
+```{r}
+DBI::dbListTables(conn)
+```
+
+```{r}
+# Reference the tables
+tuberculosis <- tbl(conn, "tuberculosis")
+country <- tbl(conn, "country")
+socioecon <- tbl(conn, "socioecon")
+```
+
+```{r}
+tb_gdp_df <- tuberculosis %>%
+  inner_join(country, by = "CountryCode") %>%
+  inner_join(socioecon, by = c("CountryCode", "Year")) %>%
+  filter(!is.na(Incidence), !is.na(GDPCapita)) %>%
+  select(CountryCode, CountryName, Year, Incidence, GDPCapita) %>% 
+  collect()
+```
+
+```{r}
+# dbplyr transforms tidyverse code in SQL for you
+species %>% 
+  filter(Relevance == "Study species") %>% 
+  select(Code, Scientific_name) %>% 
+  show_query()
+```
+
