@@ -3,7 +3,15 @@
 This repository houses a database and associated analysis for global tuberculosis incidence rates and socioeconomic indicators from 2000-2024.
 
 ## Description
-A concise description of what’s housed in the repository
+
+The file `tbquery.sql` houses the code for importing data into a DuckDB database. The database itself can be accessed in `tbdatabase.db`. The code for working with the database data and creating a visualization can be found in `tbvisualization.ipynb`.
+
+```
+├── README.md
+├── tbvisualization.ipynb
+├── tbquery.sql
+└── tbdatabase.db
+```
 
 ## Data Access
 Data on tuberculosis incidence rates were accessed via [The World Health Organization](https://www.who.int/data/gho/data/indicators/indicator-details/GHO/incidence-of-tuberculosis-(per-100-000-population-per-year)). Data on socioeconomic indicators was accessed via [World Bank Open Data](https://databank.worldbank.org/reports.aspx?source=2&series=NY.GDP.MKTP.CD&country=).
