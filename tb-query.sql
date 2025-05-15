@@ -1,7 +1,7 @@
 -- Make TB table
 CREATE TABLE tuberculosis (
-    CountryCode TEXT,
-    Year INTEGER CHECK BETWEEN 2000 AND 2025,
+    CountryCode TEXT NOT NULL,
+    Year INTEGER NOT NULL CHECK BETWEEN 2000 AND 2025,
     Incidence REAL,
     IncidenceLow REAL,
     IncidenceHigh REAL,
@@ -15,7 +15,7 @@ SELECT * FROM tuberculosis;
 
 -- Make country table
 CREATE TABLE country(
-    CountryCode TEXT PRIMARY KEY,
+    CountryCode TEXT NOT NULL PRIMARY KEY,
     CountryName TEXT,
     ContinentCode TEXT,
     ContinentName TEXT,
@@ -27,8 +27,8 @@ SELECT * FROM country;
 
 -- Make socioecon table
 CREATE TABLE socioecon(
-    CountryCode TEXT,
-    Year INTEGER CHECK BETWEEN 2000 AND 2025,
+    CountryCode TEXT NOT NULL,
+    Year INTEGER NOT NULL CHECK BETWEEN 2000 AND 2025,
     GDPCapita REAL,
     ForeignInvestment REAL,
     LifeExpectancy REAL,
