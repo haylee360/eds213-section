@@ -13,6 +13,7 @@ The file `tbquery.sql` houses the code for importing data into a DuckDB database
 |   ├── socioecon.csv
 |   └── tuberculosis.csv
 ├── README.md
+├── dependencies.txt
 ├── tb-cleaning.ipynb
 ├── tb-query.sql
 ├── tb-visualization.qmd
@@ -23,6 +24,8 @@ The file `tbquery.sql` houses the code for importing data into a DuckDB database
 Data on tuberculosis incidence rates were accessed via [The World Health Organization](https://www.who.int/data/gho/data/indicators/indicator-details/GHO/incidence-of-tuberculosis-(per-100-000-population-per-year)). Data on socioeconomic indicators was accessed via [World Bank Open Data](https://databank.worldbank.org/reports.aspx?source=2&series=NY.GDP.MKTP.CD&country=).
 
 The cleaned version of these data files can be found in the `data` folder in this repository.
+
+Dependencies for this project can be found in the `dependencies.txt` file
 
 ## Contributors 
 Author: [Haylee Oyler](github.com/haylee360)
