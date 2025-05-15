@@ -1,7 +1,10 @@
 ---
-title: "213-section"
+title: "213 Section Presentation Prep"
 author: "Haylee Oyler"
 format: html
+execute:
+  warning: false
+  message: false
 ---
 
 ```{r}
@@ -13,10 +16,12 @@ library(ggthemes)
 ```
 
 ```{r}
+# Open connection
 conn <- DBI::dbConnect(duckdb::duckdb(), dbdir="tbdatabase.db")
 ```
 
 ```{r}
+# View tables
 DBI::dbListTables(conn)
 ```
 
@@ -29,23 +34,40 @@ tb_gdp <- tbl(conn, "tb_gdp")
 ```
 
 ```{r}
-# Build the query
-tb_gdp_top10 <- tuberculosis %>%
+# Recreate my SQL analysis using dbplyer
+tb_gdp_df <- tuberculosis %>%
+  inner_join(country, by = "CountryCode") %>%
+  inner_join(socioecon, by = c("CountryCode", "Year")) %>%
+  filter(!is.na(Incidence), !is.na(GDPCapita)) %>%
+  select(CountryCode, CountryName, Year, Incidence, GDPCapita) %>% 
+  collect()
+```
+
+
+```{r}
+# Find the 10 countries with the highest TB rates
+top10_tb <- tuberculosis %>%
   inner_join(country, by = "CountryCode") %>%
   inner_join(socioecon, by = c("CountryCode", "Year")) %>%
   filter(!is.na(Incidence), !is.na(GDPCapita), Year == 2023) %>%
   arrange(desc(Incidence)) %>%
   head(10) %>% 
   collect()
+
+# Find the ten countries with the highest GDP / capita
+top10_gdp <- tuberculosis %>%
+  inner_join(country, by = "CountryCode") %>%
+  inner_join(socioecon, by = c("CountryCode", "Year")) %>%
+  filter(!is.na(Incidence), !is.na(GDPCapita), Year == 2023) %>%
+  arrange(desc(GDPCapita)) %>%
+  head(10) %>% 
+  collect()
 ```
 
 
 ```{r}
-tb_gdp_graph <- tb_gdp %>% collect()
-```
-
-```{r}
-tb_plot <- tb_gdp_graph %>% 
+# Create scatter plot of TB incidence and GDP
+tb_plot <- tb_gdp_df %>% 
   filter(Year == 2023) %>% 
   ggplot(aes(x = log(GDPCapita), y = log(Incidence))) + 
   geom_point() +
@@ -65,10 +87,11 @@ tb_plot <- tb_gdp_graph %>%
           plot.title = element_text(size = 20, margin = margin(t = 0, r = 0, 
                                                     b = 20, l = 0)),
 )
-
+tb_plot
 ```
 
 ```{r}
+# Save plot
 ggsave(
   filename = here::here("images", "tb.png"),
   plot = tb_plot,
@@ -80,48 +103,64 @@ ggsave(
 )
 ```
 
+```{r}
+# Plot countries with the highest TB rates
+tb_bar <- ggplot(top10_tb, aes(x = reorder(CountryName, Incidence), y = Incidence)) +
+  geom_col(fill = "cornflowerblue") +
+  coord_flip() +
+  labs(title = "Top ten countries with the highest tuberculosis rates\n2023",
+       x = "",
+       y = "TB Incidence (cases/100K people)") +
+  theme_minimal() +
+  theme(title = element_text(size = 16),
+        axis.text.y = element_text(size =14, color = "black"),
+        axis.text.x = element_text(size =12),
+        plot.margin = margin(10,30,10,10,))
+tb_bar
+```
 
 ```{r}
-# dumbbell plot
-dumbbell_plot <- ggplot(fields_wide) +
-  geom_linerange(aes(y = subject_area_or_subfield,
-                     xmin = percent_field_Women, 
-                     xmax = percent_field_Men)) +
-  geom_point(aes(x = percent_field_Women, 
-                 y = subject_area_or_subfield, 
-                 color = "Women"), size = 3.5) +
-  geom_point(aes(x = percent_field_Men, 
-                 y = subject_area_or_subfield, 
-                 color = "Men"),
-             size = 3.5) +
-  # geom_vline(xintercept = .5, linetype = "dashed", color = "gray40") +
-  # scale_x_continuous(breaks = seq(0, 1, by = 0.1),
-  #                    labels = scales::percent_format(scale = 100)) +  
-  # scale_color_manual(values = c("Women" = "#ec9bfc", "Men" = "#6A1E99")) + 
-  labs(title = "Tuberculosis Incidence Rates and GDP", 
-      x = "",
-      y = "")
-  # theme_minimal(base_size = 20)  + 
-  #   theme(
-  #   text = element_text(family = "lexend"),
-  #   plot.title = ggtext::element_textbox(face = "bold", 
-  #                                        margin = margin(t = 0,r = 0, 
-  #                                                        b = 0, l = -130),
-  #                                        padding = margin(t = 0, r = 0, 
-  #                                                         b = 15, l = 0)),
-  #   axis.title =  ggtext::element_textbox(size = rel(1.1),
-  #                                         color = "black",
-  #                                         padding = margin(t = 10, r = 0, 
-  #                                                          b = 0, l = 0)),
-  #   axis.text.x = element_text(size=rel(1), face = "bold"),
-  #   axis.text.y = element_text(size=rel(0.9), color = "black"),
-  #   plot.caption = element_text(size=rel(0.6)),
-  #   panel.grid.minor.x = element_blank(),
-  #   legend.position="none"
-  #   )
-
-dumbbell_plot
+# Save plot
+ggsave(
+  filename = here::here("images", "tb_bar.png"),
+  plot = tb_bar,
+  device = "png",
+  width = 9,
+  height = 6,
+  unit = "in",
+  dpi = 300,
+)
 ```
+
+```{r}
+# Plot the countries with the higest GDP/capita
+gdp_bar <- ggplot(top10_gdp, aes(x = reorder(CountryName, GDPCapita), y = GDPCapita)) +
+  geom_col(fill = "gold") +
+  coord_flip() +
+  labs(title = "Top ten countries with the highest GDP/Capita 2023",
+       x = "",
+       y = "GDP/capita ($)") +
+  theme_minimal() +
+  theme(title = element_text(size = 16),
+        axis.text.y = element_text(size =14, color = "black"),
+        axis.text.x = element_text(size =12),
+                plot.margin = margin(10,30,10,10,))
+gdp_bar
+```
+
+```{r}
+# Save plot
+ggsave(
+  filename = here::here("images", "gdp_bar.png"),
+  plot = gdp_bar,
+  device = "png",
+  width = 9,
+  height = 6,
+  unit = "in",
+  dpi = 300,
+)
+```
+
 
 ```{r}
 dbDisconnect(conn)
